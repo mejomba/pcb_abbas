@@ -1,0 +1,8 @@
+django
+djangorestframework
+drf_spectacular
+djangorestframework-simplejwt
+pillow
+django-nested-admin
+django-autocomplete-lightsalamsalam
+salam
