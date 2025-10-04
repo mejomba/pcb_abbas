@@ -5,4 +5,3 @@ djangorestframework-simplejwt
 pillow
 django-nested-admin
 django-autocomplete-lightsalamsalam
-salam
