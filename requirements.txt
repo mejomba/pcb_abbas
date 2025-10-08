@@ -5,3 +5,4 @@ djangorestframework-simplejwt
 pillow
 django-nested-admin
 django-autocomplete-light
+django-cors-headers
