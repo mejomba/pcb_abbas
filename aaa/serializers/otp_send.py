@@ -12,6 +12,7 @@ class OTPSendSerializer(serializers.Serializer):
 
     def create(self, validated_data):
         code = str(random.randint(10000, 99999))
+        print('OTP: ', code)
         expires_at = timezone.now() + timedelta(minutes=settings.OTP_LIFE_TIME)
 
         otp = OTP.objects.create(

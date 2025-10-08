@@ -9,6 +9,7 @@ from aaa.models.user_models import CustomUser
 from aaa.serializers.auth_signup import SignupSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
 from aaa.utils.jwt_tokens import generate_jwt_response
+import re
 
 
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
@@ -40,12 +41,17 @@ class CustomTokenObtainPairView(TokenObtainPairView):
 
 
 class PhoneCheckAPIView(APIView):
+    phone_pattern = r'^09\d{9}$'
+
     def post(self, request):
         phone = request.data.get('phone')
         method = request.data.get('method')  # values: "password" or "otp"
 
         if not phone or not method:
             return Response({'detail': 'phone and method are required.'}, status=400)
+
+        if not re.match(self.phone_pattern, phone):
+            raise ValueError("phone number is not valid format")
 
         try:
             user = CustomUser.objects.get(phone=phone)

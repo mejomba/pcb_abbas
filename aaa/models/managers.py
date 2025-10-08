@@ -1,14 +1,18 @@
 # users/managers.py
-
+import re
 from django.contrib.auth.base_user import BaseUserManager
 
 
 class CustomUserManager(BaseUserManager):
     use_in_migrations = True
+    phone_pattern = r'^09\d{9}$'
 
     def create_user(self, phone, password=None, **extra_fields):
         if not phone:
             raise ValueError("Phone number is required")
+        if not re.match(self.phone_pattern, phone):
+            raise ValueError("phone number is not valid format")
+
         extra_fields.setdefault('is_active', True)
 
         user = self.model(phone=phone, **extra_fields)
