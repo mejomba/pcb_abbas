@@ -158,7 +158,8 @@ SIMPLE_JWT = {
     'USER_ID_FIELD': 'id',
     'USER_ID_CLAIM': 'user_id',
 
-    'AUTH_COOKIE': 'refresh',
+    'AUTH_COOKIE': 'refresh_token',
+    'AUTH_ACCESS': 'access_token',
     'AUTH_COOKIE_HTTP_ONLY': True,
     'AUTH_COOKIE_SECURE': True,
     'AUTH_COOKIE_SAMESITE': None, #'Lax',

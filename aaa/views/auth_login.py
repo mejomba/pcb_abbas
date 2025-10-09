@@ -14,11 +14,21 @@ class LoginView(APIView):
         if serializer.is_valid():
             user = serializer.validated_data['user']
             refresh = RefreshToken.for_user(user)
+            access = refresh.access_token
             xponse = Response(generate_jwt_response(user, SignupSerializer), status=status.HTTP_200_OK)
             print(str(refresh))
             xponse.set_cookie(
                 key=settings.SIMPLE_JWT['AUTH_COOKIE'],  # usually 'refresh_token'
                 value=str(refresh),
+                httponly=settings.SIMPLE_JWT['AUTH_COOKIE_HTTP_ONLY'],
+                secure=settings.SIMPLE_JWT['AUTH_COOKIE_SECURE'],
+                samesite=settings.SIMPLE_JWT['AUTH_COOKIE_SAMESITE'],
+                max_age=settings.SIMPLE_JWT['AUTH_COOKIE_MAX_AGE'],
+                path=settings.SIMPLE_JWT['AUTH_COOKIE_PATH']
+            )
+            xponse.set_cookie(
+                key=settings.SIMPLE_JWT['AUTH_ACCESS'],  # usually 'access_token'
+                value=str(access),
                 httponly=settings.SIMPLE_JWT['AUTH_COOKIE_HTTP_ONLY'],
                 secure=settings.SIMPLE_JWT['AUTH_COOKIE_SECURE'],
                 samesite=settings.SIMPLE_JWT['AUTH_COOKIE_SAMESITE'],
