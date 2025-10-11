@@ -1,5 +1,6 @@
 # aaa/views/otp_login.py
 from django.conf import settings
+from rest_framework.permissions import AllowAny
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -13,6 +14,9 @@ from aaa.utils.jwt_tokens import generate_jwt_response
 
 
 class OtpLoginAPIView(APIView):
+    permission_classes = [AllowAny]
+    authentication_classes = []  # غیرفعال کردن JWT برای این endpoint
+
     def post(self, request):
         phone = request.data.get('phone')
         code = request.data.get('code')
@@ -48,7 +52,8 @@ class OtpLoginAPIView(APIView):
             secure=settings.SIMPLE_JWT['AUTH_COOKIE_SECURE'],
             samesite=settings.SIMPLE_JWT['AUTH_COOKIE_SAMESITE'],
             max_age=settings.SIMPLE_JWT['AUTH_COOKIE_MAX_AGE'],
-            path=settings.SIMPLE_JWT['AUTH_COOKIE_PATH']
+            path=settings.SIMPLE_JWT['AUTH_COOKIE_PATH'],
+            domain=settings.SIMPLE_JWT['AUTH_COOKIE_DOMAIN'],
         )
         xponse.set_cookie(
             key=settings.SIMPLE_JWT['AUTH_ACCESS'],  # usually 'access_token'
@@ -57,6 +62,7 @@ class OtpLoginAPIView(APIView):
             secure=settings.SIMPLE_JWT['AUTH_COOKIE_SECURE'],
             samesite=settings.SIMPLE_JWT['AUTH_COOKIE_SAMESITE'],
             max_age=settings.SIMPLE_JWT['AUTH_COOKIE_MAX_AGE'],
-            path=settings.SIMPLE_JWT['AUTH_COOKIE_PATH']
+            path=settings.SIMPLE_JWT['AUTH_COOKIE_PATH'],
+            domain=settings.SIMPLE_JWT['AUTH_COOKIE_DOMAIN'],
         )
         return xponse

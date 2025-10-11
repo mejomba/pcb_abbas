@@ -16,7 +16,6 @@ class LoginView(APIView):
             refresh = RefreshToken.for_user(user)
             access = refresh.access_token
             xponse = Response(generate_jwt_response(user, SignupSerializer), status=status.HTTP_200_OK)
-            print(str(refresh))
             xponse.set_cookie(
                 key=settings.SIMPLE_JWT['AUTH_COOKIE'],  # usually 'refresh_token'
                 value=str(refresh),
@@ -24,7 +23,8 @@ class LoginView(APIView):
                 secure=settings.SIMPLE_JWT['AUTH_COOKIE_SECURE'],
                 samesite=settings.SIMPLE_JWT['AUTH_COOKIE_SAMESITE'],
                 max_age=settings.SIMPLE_JWT['AUTH_COOKIE_MAX_AGE'],
-                path=settings.SIMPLE_JWT['AUTH_COOKIE_PATH']
+                path=settings.SIMPLE_JWT['AUTH_COOKIE_PATH'],
+                domain=settings.SIMPLE_JWT['AUTH_COOKIE_DOMAIN'],
             )
             xponse.set_cookie(
                 key=settings.SIMPLE_JWT['AUTH_ACCESS'],  # usually 'access_token'
@@ -33,7 +33,8 @@ class LoginView(APIView):
                 secure=settings.SIMPLE_JWT['AUTH_COOKIE_SECURE'],
                 samesite=settings.SIMPLE_JWT['AUTH_COOKIE_SAMESITE'],
                 max_age=settings.SIMPLE_JWT['AUTH_COOKIE_MAX_AGE'],
-                path=settings.SIMPLE_JWT['AUTH_COOKIE_PATH']
+                path=settings.SIMPLE_JWT['AUTH_COOKIE_PATH'],
+                domain=settings.SIMPLE_JWT['AUTH_COOKIE_DOMAIN'],
             )
             return xponse
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

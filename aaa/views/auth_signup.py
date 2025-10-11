@@ -89,7 +89,8 @@ class SignupView(APIView):
                 secure=settings.SIMPLE_JWT['AUTH_COOKIE_SECURE'],
                 samesite=settings.SIMPLE_JWT['AUTH_COOKIE_SAMESITE'],
                 max_age=settings.SIMPLE_JWT['AUTH_COOKIE_MAX_AGE'],
-                path=settings.SIMPLE_JWT['AUTH_COOKIE_PATH']
+                path=settings.SIMPLE_JWT['AUTH_COOKIE_PATH'],
+                domain=settings.SIMPLE_JWT['AUTH_COOKIE_DOMAIN'],
             )
             xponse.set_cookie(
                 key=settings.SIMPLE_JWT['AUTH_ACCESS'],  # usually 'refresh_token'
@@ -98,7 +99,8 @@ class SignupView(APIView):
                 secure=settings.SIMPLE_JWT['AUTH_COOKIE_SECURE'],
                 samesite=settings.SIMPLE_JWT['AUTH_COOKIE_SAMESITE'],
                 max_age=settings.SIMPLE_JWT['AUTH_COOKIE_MAX_AGE'],
-                path=settings.SIMPLE_JWT['AUTH_COOKIE_PATH']
+                path=settings.SIMPLE_JWT['AUTH_COOKIE_PATH'],
+                domain=settings.SIMPLE_JWT['AUTH_COOKIE_DOMAIN'],
             )
             return xponse
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

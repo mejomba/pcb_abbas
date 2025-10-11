@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-d_el@d%jf7#ie+(hnaoai#_hnv!qaazef&k6lfjmtheiz*#5fd
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["dev.backend.com", "127.0.0.1"]
 
 
 # Application definition
@@ -162,9 +162,10 @@ SIMPLE_JWT = {
     'AUTH_ACCESS': 'access_token',
     'AUTH_COOKIE_HTTP_ONLY': True,
     'AUTH_COOKIE_SECURE': True,
-    'AUTH_COOKIE_SAMESITE': None, #'Lax',
+    'AUTH_COOKIE_SAMESITE': 'Lax',  # None
     'AUTH_COOKIE_MAX_AGE': 60 * 60 * 24,  # 24 hours
     'AUTH_COOKIE_PATH': '/',
+    'AUTH_COOKIE_DOMAIN': '.backend.com'
 }
 
 OTP_LIFE_TIME = 2  # min
@@ -200,6 +201,10 @@ AUTHENTICATION_BACKENDS = [
 
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOWED_ORIGINS = [
-    "http://127.0.0.1:3000",
-    "http://localhost:3000",
+    # "http://127.0.0.1:3000",
+    # "http://localhost:3000",
+    "http://dev.frontend.com:3000"
+]
+CSRF_TRUSTED_ORIGINS = [
+    "http://dev.frontend.com:3000",
 ]
