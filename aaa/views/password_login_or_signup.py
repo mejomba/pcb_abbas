@@ -29,8 +29,11 @@ class PasswordLoginOrSignupView(APIView):
                 return Response({"error": "Invalid password."}, status=401)
 
         except CustomUser.DoesNotExist:
-            user = CustomUser.objects.create_user(phone=phone, password=password)
-            created = True
+            try:
+                user = CustomUser.objects.create_user(phone=phone, password=password)
+                created = True
+            except Exception as e:
+                return Response({"error": str(e)}, status=400)
 
         refresh = RefreshToken.for_user(user)
 

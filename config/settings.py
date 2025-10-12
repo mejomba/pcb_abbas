@@ -145,7 +145,7 @@ REST_FRAMEWORK = {
         'rest_framework.throttling.ScopedRateThrottle',
     ],
     'DEFAULT_THROTTLE_RATES': {
-        'resend_otp': '3/min',
+        'resend_otp': '1/min',
     },
 }
 
