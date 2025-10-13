@@ -5,6 +5,7 @@ from django.http import JsonResponse
 from rest_framework import viewsets
 from .models import AttributeGroup, Attribute, AttributeOption, ConditionalRule
 from .serializers import AttributeGroupSerializer, AttributeSerializer, AttributeOptionSerializer
+from .serializers import ConditionalRuleSerializer
 
 
 class AttributeGroupViewSet(viewsets.ModelViewSet):
@@ -30,10 +31,6 @@ class AttributeOptionViewSet(viewsets.ModelViewSet):
     """
     queryset = AttributeOption.objects.all()
     serializer_class = AttributeOptionSerializer
-
-
-# products/views.py (ادامه فایل)
-from .serializers import ConditionalRuleSerializer
 
 
 class ConditionalRuleViewSet(viewsets.ReadOnlyModelViewSet):
