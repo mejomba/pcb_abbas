@@ -1,11 +1,14 @@
 # products/views.py
 import json
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_exempt
 from django.contrib.contenttypes.models import ContentType
 from django.http import JsonResponse
-from rest_framework import viewsets
-from .models import AttributeGroup, Attribute, AttributeOption, ConditionalRule
-from .serializers import AttributeGroupSerializer, AttributeSerializer, AttributeOptionSerializer
-from .serializers import ConditionalRuleSerializer
+from rest_framework import viewsets, permissions
+from .models import (AttributeGroup, Attribute, AttributeOption,
+                     ConditionalRule, Order, OrderSelection)
+from .serializers import (AttributeGroupSerializer, AttributeSerializer, AttributeOptionSerializer,
+                          ConditionalRuleSerializer, OrderSerializer, OrderSelectionSerializer)
 
 
 class AttributeGroupViewSet(viewsets.ModelViewSet):
@@ -86,3 +89,21 @@ def object_autocomplete(request):
         return JsonResponse({'results': results})
     except ContentType.DoesNotExist:
         return JsonResponse({'results': []})
+
+
+@method_decorator(csrf_exempt, name="dispatch")
+class OrderViewSet(viewsets.ModelViewSet):
+    queryset = Order.objects.all().select_related('user').prefetch_related('selections')
+    serializer_class = OrderSerializer
+    # permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.AllowAny]
+
+    def perform_create(self, serializer):
+        # در زمان ایجاد سفارش، کاربر جاری را ثبت می‌کنیم
+        serializer.save(user=self.request.user)
+
+
+class OrderSelectionViewSet(viewsets.ModelViewSet):
+    queryset = OrderSelection.objects.all().select_related('order', 'attribute', 'selected_option')
+    serializer_class = OrderSelectionSerializer
+    # permission_classes = [permissions.IsAuthenticated]

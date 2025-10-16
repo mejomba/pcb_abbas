@@ -2,7 +2,7 @@ from django.contrib import admin
 from django import forms
 from django.contrib.contenttypes.models import ContentType
 
-from .models import AttributeGroup, Attribute, AttributeOption, ConditionalRule
+from .models import AttributeGroup, Attribute, AttributeOption, ConditionalRule, Order, OrderSelection, Attribute, AttributeOption
 from django.contrib.contenttypes.admin import GenericTabularInline
 
 import nested_admin
@@ -68,7 +68,7 @@ class AttributeInline(admin.TabularInline):
     اجازه می‌دهد ویژگی‌های هر گروه را در صفحه ویرایش همان گروه مدیریت کنیم.
     """
     model = Attribute
-    extra = 1
+    extra = 0
 
 
 # @admin.register(AttributeGroup)
@@ -84,7 +84,7 @@ class ConditionalRuleInline(GenericTabularInline):
     """
     model = ConditionalRule
     fk_name = 'trigger_option' # مشخص کردن کلید خارجی اصلی این اینلاین
-    extra = 1
+    extra = 0
     # برای اینکه GenericForeignKey در ادمین نمایش داده شود، باید مدل‌ها را محدود کنیم
     ct_field = 'target_content_type'
     ct_fk_field = 'target_object_id'
@@ -108,13 +108,13 @@ class ConditionalRuleAdmin(admin.ModelAdmin):
 # به جای admin.TabularInline از nested_admin.NestedTabularInline استفاده می‌کنیم
 class AttributeOptionInline(nested_admin.NestedTabularInline):
     model = AttributeOption
-    extra = 1
+    extra = 0
     sortable_field_name = "display_order" # قابلیت drag-and-drop برای مرتب‌سازی
 
 # به جای admin.TabularInline از nested_admin.NestedStackedInline استفاده می‌کنیم
 class AttributeInline(nested_admin.NestedStackedInline):
     model = Attribute
-    extra = 1
+    extra = 0
     sortable_field_name = "display_order"
     # این خط جادویی، اینلاین تو در تو را ممکن می‌کند
     inlines = [AttributeOptionInline]
@@ -126,6 +126,100 @@ class AttributeGroupAdmin(nested_admin.NestedModelAdmin):
     # حالا اینلاین Attribute را که خودش حاوی اینلاین Option است، اضافه می‌کنیم
     inlines = [AttributeInline]
 
-# این مدل‌ها دیگر نیازی به ثبت جداگانه ندارند مگر اینکه بخواهید صفحه مستقل هم داشته باشند
-# admin.site.register(Attribute)
-# admin.site.register(AttributeOption)
+
+class OrderSelectionInline(admin.TabularInline):
+    """
+    نمایش و ویرایش انتخاب‌های هر سفارش (OrderSelection)
+    به صورت inline در صفحه‌ی سفارش
+    """
+    model = OrderSelection
+    extra = 0  # تعداد فرم خالی برای افزودن ردیف جدید
+    fields = ('attribute', 'selected_option', 'value')
+    autocomplete_fields = ('attribute', 'selected_option')
+    show_change_link = True  # لینک ورود به صفحه‌ی جزئیات رکورد
+
+
+@admin.register(Order)
+class OrderAdmin(admin.ModelAdmin):
+    """
+    پنل پیشرفته مدیریت سفارش‌ها
+    """
+    list_display = (
+        'id',
+        'user_display',
+        'colored_status',
+        'quantity',
+        'created_at',
+        'updated_at',
+    )
+    list_filter = ('status', 'created_at')
+    search_fields = ('user__username', 'user__email', 'id')
+    readonly_fields = ('created_at', 'updated_at')
+    inlines = [OrderSelectionInline]
+    ordering = ('-created_at',)
+    list_per_page = 25
+
+    def user_display(self, obj):
+        return obj.user.username if obj.user else "کاربر حذف‌شده"
+    user_display.short_description = "کاربر"
+
+    # نمایش رنگی وضعیت‌ها در لیست
+    def colored_status(self, obj):
+        color_map = {
+            'pending': '#e6b800',     # زرد
+            'processing': '#007bff',  # آبی
+            'completed': '#28a745',   # سبز
+            'canceled': '#dc3545',    # قرمز
+        }
+        color = color_map.get(obj.status, 'black')
+        return f'<b style="color:{color}">{obj.get_status_display()}</b>'
+    colored_status.allow_tags = True
+    colored_status.short_description = "وضعیت سفارش"
+
+
+@admin.register(OrderSelection)
+class OrderSelectionAdmin(admin.ModelAdmin):
+    """
+    صفحه جداگانه برای مشاهده و مدیریت OrderSelection‌ها (اختیاری)
+    """
+    list_display = (
+        'id',
+        'order_display',
+        'attribute_display',
+        'selected_option_display',
+        'value',
+    )
+    list_filter = ('attribute',)
+    search_fields = (
+        'order__id',
+        'attribute__display_name',
+        'selected_option__display_name',
+        'value',
+    )
+    autocomplete_fields = ('order', 'attribute', 'selected_option')
+    ordering = ('-id',)
+
+    def order_display(self, obj):
+        return f"#{obj.order.id}"
+    order_display.short_description = "شناسه سفارش"
+
+    def attribute_display(self, obj):
+        return obj.attribute.display_name
+    attribute_display.short_description = "ویژگی"
+
+    def selected_option_display(self, obj):
+        return obj.selected_option.display_name if obj.selected_option else "-"
+    selected_option_display.short_description = "گزینه انتخابی"
+
+
+@admin.register(Attribute)
+class AttributeAdmin(admin.ModelAdmin):
+    search_fields = ['display_name']
+    list_display = ['id', 'display_name']
+
+
+@admin.register(AttributeOption)
+class AttributeOptionAdmin(admin.ModelAdmin):
+    search_fields = ['display_name']
+    list_display = ['id', 'display_name', 'attribute']
+    autocomplete_fields = ['attribute']
