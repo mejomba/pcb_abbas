@@ -136,7 +136,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL = 'aaa.CustomUser'
 
 REST_FRAMEWORK = {
-    'DEFAULT_PAGINATION_CLASS': 'core.pagination.MicroResultsSetPagination',
+    'DEFAULT_PAGINATION_CLASS': 'core.pagination.StandardResultsSetPagination',
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
@@ -202,9 +202,10 @@ AUTHENTICATION_BACKENDS = [
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOWED_ORIGINS = [
     # "http://127.0.0.1:3000",
-    # "http://localhost:3000",
+    "http://localhost:3000",
     "http://dev.frontend.com:3000"
 ]
 CSRF_TRUSTED_ORIGINS = [
     "http://dev.frontend.com:3000",
+    "http://localhost:3000",
 ]
