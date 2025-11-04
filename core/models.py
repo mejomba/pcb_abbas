@@ -55,10 +55,18 @@ class AbstractCommWithUserModel(AbstractCommModel):
 
 
 class Tag(AbstractCommModel):
-    title = models.CharField(max_length=32)
+    title = models.CharField(max_length=32, unique=True)
+    slug = models.SlugField(max_length=64, unique=True, blank=True)
 
-    def __str__(self):
-        return self.title
+    class Meta:
+        verbose_name = "Tag"
+        verbose_name_plural = "Tags"
+        indexes = [models.Index(fields=["slug"])]
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.title)[:64]
+        super().save(*args, **kwargs)
 
 
 class HeaderImage(AbstractCommModel):

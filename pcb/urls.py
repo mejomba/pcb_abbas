@@ -4,7 +4,7 @@ from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from .views import (AttributeGroupViewSet, AttributeViewSet, AttributeOptionViewSet,
                     ConditionalRuleViewSet, content_type_autocomplete, object_autocomplete, OrderViewSet,
-                    OrderSelectionViewSet)
+                    OrderSelectionViewSet, upload_order_payment)
 
 # ساخت یک روتر
 router = DefaultRouter()
@@ -24,6 +24,7 @@ urlpatterns = [
     path('', include(router.urls)),
     path('content-type-autocomplete/', content_type_autocomplete, name='target-content-type-autocomplete'),
     path('object-id-autocomplete/', object_autocomplete, name='target-object-id-autocomplete'),
+    path('order_payment_receipt/upload/', upload_order_payment, name='order_payment_receipt.upload'),
 ]
 
 

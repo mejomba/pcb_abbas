@@ -1,6 +1,6 @@
 from django.urls import path
-from rest_framework_simplejwt.views import TokenRefreshView
 
+from aaa.views.auth_token import CustomTokenRefreshView
 from aaa.views.auth_login import LoginView
 from aaa.views.auth_logout import LogoutView
 from aaa.views.auth_signup import CustomTokenObtainPairView, PhoneCheckAPIView, SignupView
@@ -20,7 +20,7 @@ urlpatterns = [
     path('phone-check/', PhoneCheckAPIView.as_view(), name='phone_check'),  #buse
     path('resend-otp/', ResendOtpAPIView.as_view(), name='resend-otp'),  # use
     path('token/', CustomTokenObtainPairView.as_view(), name='token_obtain_pair'),
-    path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    path('token/refresh/', CustomTokenRefreshView.as_view(), name='token_refresh'),
     path('signup/', SignupView.as_view(), name='auth_signup'),
     path('otp/register/', OtpRegisterAPIView.as_view(), name='otp-register'),  # use
     path('otp/send/', OTPSendView.as_view(), name='auth_otp_send'),  # use

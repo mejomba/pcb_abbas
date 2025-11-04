@@ -6,3 +6,7 @@ pillow
 django-nested-admin
 django-autocomplete-light
 django-cors-headers
+django-mptt
+django-ckeditor
+pandas
+django-filter

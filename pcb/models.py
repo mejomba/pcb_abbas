@@ -3,11 +3,15 @@ from django.conf import settings
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 
+from blog.models import Post
+from core.models import AbstractCommWithUserModel
+
 
 class AttributeGroup(models.Model):
     """
     گروهی برای دسته‌بندی ویژگی‌ها، مانند 'مشخصات PCB'.
     """
+    file = models.FileField(upload_to='uploads/attribute_group/image/', blank=True, null=True)
     name = models.CharField(max_length=100, unique=True, help_text="نام سیستمی و انگلیسی (مثال: pcb_specifications)")
     display_name = models.CharField(max_length=255, help_text="نام نمایشی برای کاربر (مثال: مشخصات PCB)")
     display_order = models.PositiveIntegerField(default=0, help_text="ترتیب نمایش گروه")
@@ -31,6 +35,8 @@ class Attribute(models.Model):
         SELECT_BOX = 'select_box', 'لیست کشویی'
         COLOR_PICKER = 'color_picker', 'انتخابگر رنگ'
 
+    file = models.FileField(upload_to='uploads/attribute/image/', blank=True, null=True)
+    guid = models.ForeignKey(Post, on_delete=models.DO_NOTHING, related_name='guids', null=True, blank=True)
     group = models.ForeignKey(
         AttributeGroup,
         on_delete=models.SET_NULL,
@@ -72,6 +78,7 @@ class AttributeOption(models.Model):
     display_name = models.CharField(max_length=255, help_text="نام نمایشی (مثال: سبز)")
     is_default = models.BooleanField(default=False, verbose_name="گزینه پیش‌فرض؟")
     display_order = models.PositiveIntegerField(default=0, help_text="ترتیب نمایش گزینه")
+    file = models.FileField(upload_to='uploads/attribute/image/', blank=True, null=True)
 
     class Meta:
         verbose_name = "گزینه ویژگی"
@@ -88,19 +95,26 @@ class Order(models.Model):
     اطلاعات کلی یک سفارش ثبت‌شده توسط کاربر را نگهداری می‌کند.
     """
     class OrderStatus(models.TextChoices):
-        PENDING = 'pending', 'در انتظار پرداخت'
-        PROCESSING = 'processing', 'در حال پردازش'
-        COMPLETED = 'completed', 'تکمیل شده'
+        PENDING = 'pending', 'در انتظار بررسی'
+        QUOTATION = 'quotation', 'پیش فاکتور شده (در انتظار پرداخت)'
+        PROCESS = 'process', 'در حال ساخت'
+        PENDING_DELIVERY = 'pending_delivery', 'در انتظار تحویل'
+        DELIVER = 'deliver', 'تحویل شده'
         CANCELED = 'canceled', 'لغو شده'
 
+    file = models.FileField(upload_to='uploads/orders/files/', blank=True, null=True)
+    quotation = models.FileField(upload_to='uploads/orders/quotation/files/', blank=True, null=True)
+    original_filename = models.CharField(max_length=255, null=True, blank=True)
+    is_seen = models.BooleanField(default=False)
+    download_count = models.PositiveSmallIntegerField(default=0)
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
-        on_delete=models.SET_NULL, # اگر کاربر حذف شد، سفارش باقی بماند
+        on_delete=models.DO_NOTHING, # اگر کاربر حذف شد، سفارش باقی بماند
         null=True,
         blank=True,
         verbose_name="کاربر"
     )
-    quantity = models.PositiveIntegerField(default=1, verbose_name="تعداد")
+    # quantity = models.PositiveIntegerField(default=1, verbose_name="تعداد")
     status = models.CharField(
         max_length=20,
         choices=OrderStatus.choices,
@@ -159,6 +173,18 @@ class OrderSelection(models.Model):
     def __str__(self):
         display_value = self.selected_option.display_name if self.selected_option else self.value
         return f"{self.attribute.display_name}: {display_value}"
+
+
+class OrderPayment(AbstractCommWithUserModel):
+    order = models.ForeignKey(Order, on_delete=models.DO_NOTHING, related_name='payments')
+    file = models.FileField(upload_to='uploads/orders/payment/files/', blank=True, null=True)
+
+
+class OrderReadOnly(Order):
+    class Meta:
+        proxy = True
+        verbose_name = "Order (View Only)"
+        verbose_name_plural = "Orders (View Only)"
 
 
 class ConditionalRule(models.Model):

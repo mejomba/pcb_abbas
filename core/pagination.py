@@ -26,6 +26,12 @@ class LargeResultsSetPagination(PageNumberPagination):
 
 
 class XLargeResultsSetPagination(PageNumberPagination):
+    page_size = 250
+    page_size_query_param = 'page_size'
+    max_page_size = 100_0000
+
+
+class XXLargeResultsSetPagination(PageNumberPagination):
     page_size = 1000
     page_size_query_param = 'page_size'
     max_page_size = 100_0000

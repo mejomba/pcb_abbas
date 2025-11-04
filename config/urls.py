@@ -6,11 +6,13 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    # path("ckeditor/", include("ckeditor_uploader.urls")),
+    # path("blog/", include("blog.urls")),
+    path("ckeditor/", include("ckeditor_uploader.urls")),
 
     path('api/v1/', include([
         path('auth/', include(('aaa.urls.auth_urls', 'auth'), namespace='auth')),
         path('pcb/', include(('pcb.urls', 'pcb'), namespace='pcb')),
+        path("blog/", include("blog.urls")),
     ])),
 
     path('api/schema/', SpectacularAPIView.as_view(), name='schema'),

@@ -4,9 +4,13 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.contenttypes.models import ContentType
 from django.http import JsonResponse
-from rest_framework import viewsets, permissions
+from rest_framework import viewsets, permissions, parsers
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+
 from .models import (AttributeGroup, Attribute, AttributeOption,
-                     ConditionalRule, Order, OrderSelection)
+                     ConditionalRule, Order, OrderSelection, OrderPayment)
 from .serializers import (AttributeGroupSerializer, AttributeSerializer, AttributeOptionSerializer,
                           ConditionalRuleSerializer, OrderSerializer, OrderSelectionSerializer)
 
@@ -97,6 +101,7 @@ class OrderViewSet(viewsets.ModelViewSet):
     serializer_class = OrderSerializer
     # permission_classes = [permissions.IsAuthenticated]
     permission_classes = [permissions.AllowAny]
+    parser_classes = [parsers.MultiPartParser, parsers.FormParser]
 
     def perform_create(self, serializer):
         # در زمان ایجاد سفارش، کاربر جاری را ثبت می‌کنیم
@@ -107,3 +112,18 @@ class OrderSelectionViewSet(viewsets.ModelViewSet):
     queryset = OrderSelection.objects.all().select_related('order', 'attribute', 'selected_option')
     serializer_class = OrderSelectionSerializer
     # permission_classes = [permissions.IsAuthenticated]
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def upload_order_payment(request):
+    order_id = request.data.get('order')
+    file = request.FILES.get('file')
+
+    payment = OrderPayment.objects.create(
+        creator_user=request.user,
+        editor_user=request.user,
+        order_id=order_id,
+        file=file
+    )
+    return Response({"id": payment.id})

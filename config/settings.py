@@ -39,6 +39,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'corsheaders',
     'rest_framework',
+    'ckeditor',
+    'ckeditor_uploader',
     'aaa',
     'core',
     'rest_framework_simplejwt.token_blacklist',
@@ -47,6 +49,9 @@ INSTALLED_APPS = [
     'nested_admin',
     'dal',
     'dal_select2',
+    'mptt',
+    'blog',
+    'django_filters',
 ]
 
 MIDDLEWARE = [
@@ -150,8 +155,8 @@ REST_FRAMEWORK = {
 }
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=30),
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=1000),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7000),
     'AUTH_HEADER_TYPES': ('Bearer',),
     'AUTH_TOKEN_CLASSES': ('rest_framework_simplejwt.tokens.AccessToken',),
     'BLACKLIST_AFTER_ROTATION': True,
@@ -194,6 +199,21 @@ SPECTACULAR_SETTINGS = {
     # ],
 }
 
+CKEDITOR_UPLOAD_PATH = "uploads/ck/"
+
+CKEDITOR_IMAGE_BACKEND = "pillow"
+CKEDITOR_ALLOW_NONIMAGE_FILES = True
+
+CKEDITOR_CONFIGS = {
+    "default": {
+        "toolbar": "full",
+        "height": 300,
+        "width": "100%",
+        # نمونه: فعال کردن پست‌پروسس لینک/تصویر
+        "extraPlugins": ",".join(["uploadimage", "justify", "autolink", "codesnippet"]),
+    }
+}
+
 AUTHENTICATION_BACKENDS = [
     'aaa.auth_backend.PhoneBackend',
     'django.contrib.auth.backends.ModelBackend',
@@ -201,11 +221,12 @@ AUTHENTICATION_BACKENDS = [
 
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOWED_ORIGINS = [
-    # "http://127.0.0.1:3000",
+    "http://127.0.0.1:3000",
     "http://localhost:3000",
     "http://dev.frontend.com:3000"
 ]
 CSRF_TRUSTED_ORIGINS = [
     "http://dev.frontend.com:3000",
     "http://localhost:3000",
+    "http://127.0.0.1:3000",
 ]
