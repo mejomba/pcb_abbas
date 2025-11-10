@@ -10,3 +10,4 @@ django-mptt
 django-ckeditor
 pandas
 django-filter
+openpyxl
