@@ -228,10 +228,12 @@ CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1:3000",
     "http://localhost:3000",
-    "http://dev.frontend.com:3000"
+    "http://dev.frontend.com:3000",
+    "https://client-wine-phi.vercel.app",
 ]
 CSRF_TRUSTED_ORIGINS = [
     "http://dev.frontend.com:3000",
     "http://localhost:3000",
     "http://127.0.0.1:3000",
+    "https://client-wine-phi.vercel.app"
 ]
