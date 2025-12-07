@@ -57,7 +57,7 @@ class GuidPostMiniSerializer(GuidPostSerializer):
 
 class GuidPostContentSerializer(GuidPostSerializer):
     class Meta(GuidPostSerializer.Meta):
-        fields = ['category', 'breadcrumb', 'content']
+        fields = ['category', 'breadcrumb', 'content', 'slug', 'guid_content', 'id']
 
     # def get_posts(self):
     #     pass
